@@ -546,13 +546,13 @@ export default function Reports() {
           <div className="bg-card p-4 flex flex-col justify-between gap-2 min-w-0 overflow-hidden">
             <div className="flex items-center justify-between h-5 min-w-0">
               <span className="text-xs uppercase tracking-widest text-muted-foreground font-mono inline-flex items-center gap-1.5 leading-none shrink-0">
-                <TrendingDown className="size-3.5 text-muted-foreground shrink-0" />
+                <TrendingDown className={cn("size-3.5 shrink-0", (totalExpense ?? 0) > 0 ? "text-rose-500" : "text-muted-foreground")} />
                 <span>{t('reports.totalExpense')}</span>
               </span>
               <MagnitudeBadge amount={totalExpense} memoryKey={`reports-total-expense-${reportPeriodKey}`} />
             </div>
             <div className="min-w-0">
-              <div className="text-2xl font-mono tracking-tight font-medium text-foreground leading-none min-w-0">
+              <div className={cn("text-2xl font-mono tracking-tight font-medium leading-none min-w-0", (totalExpense ?? 0) > 0 ? "text-rose-500" : "text-foreground")}>
                 <AutoMarquee align="left">
                   <span className="whitespace-nowrap inline-flex items-center select-text">
                     {currencySymbol}
@@ -577,7 +577,7 @@ export default function Reports() {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 1,
                     })
-                  : '--'}
+                  : '-'}
               </p>
             </div>
           </div>
@@ -596,7 +596,7 @@ export default function Reports() {
           >
             <div className="flex items-center justify-between h-5 min-w-0">
               <span className="text-xs uppercase tracking-widest text-muted-foreground font-mono inline-flex items-center gap-1.5 leading-none shrink-0">
-                <Flame className="size-3.5 text-amber-500 shrink-0" />
+                <Flame className={cn("size-3.5 shrink-0", peakExpenseItem && peakExpenseItem.netAmount > 0 ? "text-rose-500" : "text-amber-500")} />
                 <span>{t('reports.peakExpense')}</span>
               </span>
               <MagnitudeBadge
@@ -607,7 +607,7 @@ export default function Reports() {
             <div className="min-w-0">
               {peakExpenseItem ? (
                 <>
-                  <div className="text-2xl font-mono tracking-tight font-medium text-foreground leading-none min-w-0">
+                  <div className={cn("text-2xl font-mono tracking-tight font-medium leading-none min-w-0", peakExpenseItem.netAmount > 0 ? "text-rose-500" : "text-foreground")}>
                     <AutoMarquee align="left">
                       <span className="whitespace-nowrap inline-flex items-center select-text">
                         {currencySymbol}
@@ -634,9 +634,9 @@ export default function Reports() {
               ) : (
                 <>
                   <p className="text-2xl font-mono tracking-tight font-medium text-muted-foreground leading-none">
-                    --
+                    -
                   </p>
-                  <p className="text-[11px] font-mono text-muted-foreground mt-0.5">--</p>
+                  <p className="text-[11px] font-mono text-muted-foreground mt-0.5">-</p>
                 </>
               )}
             </div>
@@ -646,13 +646,13 @@ export default function Reports() {
           <div className="bg-card p-4 flex flex-col justify-between gap-2 min-w-0 overflow-hidden">
             <div className="flex items-center justify-between h-5 min-w-0">
               <span className="text-xs uppercase tracking-widest text-muted-foreground font-mono inline-flex items-center gap-1.5 leading-none shrink-0">
-                <TrendingUp className="size-3.5 text-emerald-500 shrink-0" />
+                <TrendingUp className={cn("size-3.5 shrink-0", (totalIncome ?? 0) > 0 ? "text-emerald-500" : "text-muted-foreground")} />
                 <span>{t('reports.totalIncome', '總收入')}</span>
               </span>
               <MagnitudeBadge amount={totalIncome} memoryKey={`reports-total-income-${reportPeriodKey}`} />
             </div>
             <div className="min-w-0">
-              <div className="text-2xl font-mono tracking-tight font-medium text-foreground leading-none min-w-0">
+              <div className={cn("text-2xl font-mono tracking-tight font-medium leading-none min-w-0", (totalIncome ?? 0) > 0 ? "text-emerald-500" : "text-foreground")}>
                 <AutoMarquee align="left">
                   <span className="whitespace-nowrap inline-flex items-center select-text">
                     {currencySymbol}
@@ -677,7 +677,7 @@ export default function Reports() {
                       : `${savingsRate.toFixed(1)}%`}
                   </span>
                 ) : (
-                  <span className="text-muted-foreground">{t('reports.savingsRate', '結餘率')}: --</span>
+                  <span className="text-muted-foreground">{t('reports.savingsRate', '結餘率')}: -</span>
                 )}
               </p>
             </div>
@@ -697,7 +697,7 @@ export default function Reports() {
           >
             <div className="flex items-center justify-between h-5 min-w-0">
               <span className="text-xs uppercase tracking-widest text-muted-foreground font-mono inline-flex items-center gap-1.5 leading-none shrink-0">
-                <Flame className="size-3.5 text-emerald-500 shrink-0" />
+                <Flame className={cn("size-3.5 shrink-0", peakIncomeItem && peakIncomeItem.netAmount > 0 ? "text-emerald-500" : "text-muted-foreground")} />
                 <span>{t('reports.peakIncome')}</span>
               </span>
               <MagnitudeBadge
@@ -708,7 +708,7 @@ export default function Reports() {
             <div className="min-w-0">
               {peakIncomeItem ? (
                 <>
-                  <div className="text-2xl font-mono tracking-tight font-medium text-foreground leading-none min-w-0">
+                  <div className={cn("text-2xl font-mono tracking-tight font-medium leading-none min-w-0", peakIncomeItem.netAmount > 0 ? "text-emerald-500" : "text-foreground")}>
                     <AutoMarquee align="left">
                       <span className="whitespace-nowrap inline-flex items-center select-text">
                         {currencySymbol}
@@ -735,9 +735,9 @@ export default function Reports() {
               ) : (
                 <>
                   <p className="text-2xl font-mono tracking-tight font-medium text-muted-foreground leading-none">
-                    --
+                    -
                   </p>
-                  <p className="text-[11px] font-mono text-muted-foreground mt-0.5">--</p>
+                  <p className="text-[11px] font-mono text-muted-foreground mt-0.5">-</p>
                 </>
               )}
             </div>

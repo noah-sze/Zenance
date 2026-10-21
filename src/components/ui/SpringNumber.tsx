@@ -47,7 +47,7 @@ export function SpringNumber({
   if (value === undefined || value === null || isNaN(value)) {
     return (
       <span className={cn('tabular-nums font-mono select-text text-muted-foreground', className)}>
-        {prefix}--{suffix}
+        {prefix}-{suffix}
       </span>
     );
   }

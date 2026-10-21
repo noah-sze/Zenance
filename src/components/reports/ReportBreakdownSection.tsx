@@ -126,7 +126,7 @@ export function ReportBreakdownSection({
                 </span>
                 <span className="text-sm font-bold text-foreground">
                   {currencySymbol}
-                  {currentTotal !== undefined ? formatAmountNumber(currentTotal) : '--'}
+                  {currentTotal !== undefined ? formatAmountNumber(currentTotal) : '-'}
                 </span>
               </div>
             </div>

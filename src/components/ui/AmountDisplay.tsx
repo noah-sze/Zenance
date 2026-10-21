@@ -38,7 +38,7 @@ export function AmountDisplay({
   if (amount === undefined || amount === null || isNaN(amount)) {
     return (
       <span className={cn('font-mono tabular-nums font-medium select-text text-muted-foreground', className)}>
-        {symbol}--
+        {symbol}-
       </span>
     );
   }
