@@ -155,7 +155,7 @@ function VoucherHeroAmount({
       onMouseLeave={handleMouseLeave}
       title={isLargeAmount ? t('receipt.toggleAmountCompact') : undefined}
       className={cn(
-        "w-full max-w-full overflow-hidden text-3xl sm:text-4xl font-mono tracking-tighter font-extrabold select-all py-1.5 leading-tight flex items-center justify-center transition-opacity duration-150",
+        "w-full max-w-full overflow-hidden text-3xl sm:text-4xl font-mono tracking-tighter font-extrabold select-all py-1.5 leading-tight flex items-center justify-center transition-opacity duration-150 shrink-0",
         isLargeAmount && "cursor-pointer hover:opacity-90 active:scale-[0.99]"
       )}
     >
@@ -1100,8 +1100,12 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
             setActiveTxId(tx.id);
           }
         }}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
         className={cn(
-          "w-[280px] max-w-[calc(100vw-32px)] max-h-[min(560px,calc(100dvh-120px))] shrink-0 bg-card text-card-foreground rounded-2xl shadow-none relative overflow-hidden transition-opacity duration-150 border border-border flex flex-col justify-between touch-none",
+          "w-[280px] max-w-[calc(100vw-32px)] min-h-[min(430px,calc(100dvh-130px))] max-h-[min(560px,calc(100dvh-120px))] shrink-0 bg-card text-card-foreground rounded-2xl shadow-none relative overflow-y-auto overflow-x-hidden overscroll-contain no-scrollbar transition-opacity duration-150 border border-border flex flex-col touch-pan-y",
           isActive
             ? "opacity-100 pointer-events-auto select-text cursor-default"
             : "opacity-30 hover:opacity-60 cursor-pointer pointer-events-auto select-none"
@@ -1140,10 +1144,13 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
           </div>
         </div>
 
-        {/* Hero Amount & Category Section */}
-        <div className="px-4 sm:px-5 py-1 sm:py-2 flex flex-col items-center text-center shrink-0">
-          {/* Category Capsule / Transfer Route & Status Badges */}
-          <div className="flex items-center justify-center gap-1.5 mb-1.5 flex-wrap">
+        {/* Hero Amount & Category Section (動態留白僅存在於分類上方與金額下方) */}
+        <div className="px-4 sm:px-5 py-0 flex flex-col items-center text-center flex-1 min-h-0 justify-between shrink-0">
+          {/* 紅框 1: 分類上方動態留白（標準 40px，空間縮小時優先壓縮至 0px） */}
+          <div className="flex-1 h-[40px] max-h-[40px] min-h-0 shrink" />
+
+          {/* Category Capsule / Transfer Route & Status Badges (絕對不被壓縮) */}
+          <div className="flex items-center justify-center gap-1.5 mb-1.5 flex-wrap shrink-0">
             {isChild ? (
               <span className={cn(
                 "inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-sans font-medium border shrink-0",
@@ -1259,7 +1266,7 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
             const cardRefundedTotal = cardRefunds.reduce((sum, r) => sum + (r.originalAmount ?? r.amount), 0);
             if (cardRefundedTotal <= 0) return null;
             return (
-              <div className="text-[11px] font-mono text-muted-foreground mt-0.5 flex items-center gap-1">
+              <div className="text-[11px] font-mono text-muted-foreground mt-0.5 flex items-center gap-1 shrink-0">
                 <span>{getAccountName(tx.accountId)}</span>
                 <span className="text-muted-foreground/60">·</span>
                 <span className="text-emerald-500 font-medium">
@@ -1268,6 +1275,9 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
               </div>
             );
           })()}
+
+          {/* 紅框 2: 金額下方動態留白（標準 40px，空間縮小時優先壓縮至 0px） */}
+          <div className="flex-1 h-[40px] max-h-[40px] min-h-0 shrink" />
         </div>
 
         {/* Ticket Notches & Dashed Perforation Line */}
@@ -1280,15 +1290,10 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
           <div className="absolute -right-[10px] size-5 rounded-full bg-background border border-border" />
         </div>
 
-        {/* Dot Matrix Details Grid (彈性滾動區塊，小高度設備可自適應內部捲動) */}
-        <div
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
-          className="px-4 sm:px-5 pt-1.5 sm:pt-2 pb-[30px] space-y-1 sm:space-y-1.5 font-mono text-xs flex-1 min-h-0 overflow-y-auto overscroll-contain select-text [scrollbar-width:thin] touch-pan-y"
-        >
+        {/* Dot Matrix Details Grid (緊湊自適應，由全卡片統一滾動) */}
+        <div className="px-4 sm:px-5 pt-1.5 sm:pt-2 pb-3.5 space-y-1 sm:space-y-1.5 font-mono text-xs shrink-0 select-text">
           {/* Column Title Row */}
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border/50 pb-1 mb-1.5 sticky top-0 bg-card z-10">
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border/50 pb-1 mb-1.5 bg-card">
             <span>{t('receipt.item', '項目')}</span>
             <span>{t('receipt.details', '明細')}</span>
           </div>
