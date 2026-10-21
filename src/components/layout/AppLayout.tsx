@@ -21,6 +21,7 @@ import { TransactionDetailsDialog } from '@/components/transactions/TransactionD
 import { E2EEUnlockDialog } from '@/components/security/E2EEUnlockDialog';
 import { InitialSyncModal } from '@/components/sync/InitialSyncModal';
 import { MarqueeText } from '@/components/ui/MarqueeText';
+import { useDesktopWheelScroll } from '@/hooks/useDesktopWheelScroll';
 
 export function AppLayout() {
   const location = useLocation();
@@ -206,6 +207,7 @@ export function AppLayout() {
   }, [location.pathname]);
 
   const mainRef = useRef<HTMLElement>(null);
+  useDesktopWheelScroll(mainRef);
 
   // Seamless scroll position restoration per page
   useLayoutEffect(() => {
@@ -294,32 +296,34 @@ export function AppLayout() {
       <main 
         ref={mainRef} 
         onScroll={handleScroll}
-        className="flex-1 w-full max-w-xl mx-auto overflow-y-auto px-5 pt-[calc(0.5rem+env(safe-area-inset-top,0px)+var(--ios-status-blur-offset,0px))] sm:pt-[calc(1rem+env(safe-area-inset-top,0px)+var(--ios-status-blur-offset,0px))] pb-6 [scrollbar-gutter:stable]"
+        className="flex-1 w-full overflow-y-auto [scrollbar-gutter:stable]"
       >
-        {/* Keep-Alive Tab Views with Ledger-Scoped Lifecycle Key */}
-        {mountedTabs.has('/') && (
-          <div key={`dash-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/' ? 'block' : 'none' }}>
-            <Dashboard />
-          </div>
-        )}
-        {mountedTabs.has('/budgets') && (
-          <div key={`budgets-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/budgets' ? 'block' : 'none' }}>
-            <Budgets />
-          </div>
-        )}
-        {mountedTabs.has('/accounts') && (
-          <div key={`accounts-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/accounts' ? 'block' : 'none' }}>
-            <Accounts />
-          </div>
-        )}
-        {mountedTabs.has('/contacts') && (
-          <div key={`contacts-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/contacts' ? 'block' : 'none' }}>
-            <Contacts />
-          </div>
-        )}
+        <div className="w-full max-w-xl mx-auto px-5 pt-[calc(0.5rem+env(safe-area-inset-top,0px)+var(--ios-status-blur-offset,0px))] sm:pt-[calc(1rem+env(safe-area-inset-top,0px)+var(--ios-status-blur-offset,0px))] pb-6 min-h-full">
+          {/* Keep-Alive Tab Views with Ledger-Scoped Lifecycle Key */}
+          {mountedTabs.has('/') && (
+            <div key={`dash-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/' ? 'block' : 'none' }}>
+              <Dashboard />
+            </div>
+          )}
+          {mountedTabs.has('/budgets') && (
+            <div key={`budgets-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/budgets' ? 'block' : 'none' }}>
+              <Budgets />
+            </div>
+          )}
+          {mountedTabs.has('/accounts') && (
+            <div key={`accounts-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/accounts' ? 'block' : 'none' }}>
+              <Accounts />
+            </div>
+          )}
+          {mountedTabs.has('/contacts') && (
+            <div key={`contacts-${activeLedgerId || 'default'}`} style={{ display: location.pathname === '/contacts' ? 'block' : 'none' }}>
+              <Contacts />
+            </div>
+          )}
 
-        {/* Sub-routes and detail pages rendered via standard Outlet */}
-        {!isCurrentTab && <Outlet />}
+          {/* Sub-routes and detail pages rendered via standard Outlet */}
+          {!isCurrentTab && <Outlet />}
+        </div>
       </main>
 
       {/* Bottom Navigation - Responsive Height with Safe Area Docking */}
