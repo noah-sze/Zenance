@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { getBudgetWarningColor } from '@/utils/budgetColorUtils';
 
 export interface BudgetProgressBarProps {
   /** Unique key to identify the budget instance (kept for prop compatibility) */
@@ -16,6 +17,8 @@ export interface BudgetProgressBarProps {
   className?: string;
   /** Kept for prop compatibility */
   animateFirstMountOnly?: boolean;
+  /** Whether to enable stepped warning colors between 75% and 100% (defaults to true) */
+  showWarningColors?: boolean;
 }
 
 export const BudgetProgressBar: React.FC<BudgetProgressBarProps> = ({
@@ -24,11 +27,20 @@ export const BudgetProgressBar: React.FC<BudgetProgressBarProps> = ({
   variant = 'primary',
   heightClass = 'h-1.5',
   className,
+  showWarningColors = true,
 }) => {
   const clampedTarget = Math.min(100, Math.max(0, percentage));
 
-  // Color mapping based on variant and isOver
+  // 75% - 100% 單色分段預警色值 (值 1 ~ 10)
+  const warningColor = showWarningColors
+    ? getBudgetWarningColor(percentage, isOver)
+    : null;
+
+  // Color mapping based on variant and isOver (used when warningColor is not active)
   const getFillColorClass = () => {
+    if (warningColor) {
+      return '';
+    }
     if (isOver) {
       return 'bg-destructive';
     }
@@ -41,6 +53,11 @@ export const BudgetProgressBar: React.FC<BudgetProgressBarProps> = ({
       default:
         return 'bg-primary';
     }
+  };
+
+  const fillStyle: React.CSSProperties = {
+    width: `${clampedTarget}%`,
+    ...(warningColor ? { backgroundColor: warningColor } : {}),
   };
 
   return (
@@ -56,8 +73,9 @@ export const BudgetProgressBar: React.FC<BudgetProgressBarProps> = ({
           'h-full rounded-full transition-none',
           getFillColorClass()
         )}
-        style={{ width: `${clampedTarget}%` }}
+        style={fillStyle}
       />
     </div>
   );
 };
+

@@ -802,6 +802,8 @@
       "totalOverbudget": "予算超過額",
       "used": "使用済",
       "onTrack": "順調",
+      "budgetTight": "残りわずか",
+      "budgetNearLimit": "上限間近",
       "overbudgetWarning": "合計 {{count}} 件が予算超過",
       "totalBudget": "総予算額",
       "totalSpent": "支出済",

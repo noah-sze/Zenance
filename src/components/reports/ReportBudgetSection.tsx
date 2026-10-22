@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  AlertCircle,
   AlertTriangle,
   CheckCircle2,
   ChevronRight,
@@ -10,6 +11,8 @@ import { format, startOfMonth, endOfMonth, getYear } from 'date-fns';
 import { useBudgets } from '@/hooks/useBudgets';
 import { useCategories } from '@/hooks/useCategories';
 import { cn, formatAmountNumber } from '@/lib/utils';
+import { BudgetProgressBar } from '@/components/budgets/BudgetProgressBar';
+import { getBudgetWarningColor } from '@/utils/budgetColorUtils';
 import type { Budget } from '@/services/db/db';
 import type { PeriodType } from '@/pages/Reports';
 
@@ -199,35 +202,54 @@ export function ReportBudgetSection({
 
               {/* 整體進度條 */}
               <div className="w-full max-w-sm mt-3 space-y-1">
-                <div className="w-full h-2 rounded-full bg-muted/60 overflow-hidden">
-                  <div
-                    className={cn(
-                      'h-full rounded-full transition-all duration-300',
-                      summary.utilizationRate > 100
-                        ? 'bg-destructive'
-                        : summary.utilizationRate >= 85
-                          ? 'bg-amber-500'
-                          : 'bg-foreground'
-                    )}
-                    style={{ width: `${Math.min(100, Math.max(summary.utilizationRate, 2))}%` }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
-                  <span>
-                    {t('reports.used', '已用')} {summary.utilizationRate.toFixed(1)}%
-                  </span>
-                  {summary.overbudgetCount > 0 ? (
-                    <span className="text-destructive font-semibold flex items-center gap-1">
-                      <AlertTriangle className="size-3" />
-                      {t('reports.overbudgetWarning', { count: summary.overbudgetCount })}
-                    </span>
-                  ) : (
-                    <span className="text-emerald-500 font-semibold flex items-center gap-1">
-                      <CheckCircle2 className="size-3" />
-                      {t('reports.onTrack', '進度良好')}
-                    </span>
-                  )}
-                </div>
+                <BudgetProgressBar
+                  percentage={summary.utilizationRate}
+                  isOver={summary.utilizationRate > 100}
+                  heightClass="h-2"
+                  variant="foreground"
+                />
+                {/* Overall Warning Color for status & utilization */}
+                {(() => {
+                  const isOver = summary.utilizationRate > 100 || summary.overbudgetCount > 0;
+                  const overallWarningColor = getBudgetWarningColor(summary.utilizationRate, isOver);
+
+                  return (
+                    <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
+                      <span>
+                        {t('reports.used', '已用')} {summary.utilizationRate.toFixed(1)}%
+                      </span>
+                      {isOver ? (
+                        <span className="text-destructive font-semibold flex items-center gap-1">
+                          <AlertTriangle className="size-3" />
+                          {summary.overbudgetCount > 0
+                            ? t('reports.overbudgetWarning', { count: summary.overbudgetCount })
+                            : t('reports.overspent', '已超支')}
+                        </span>
+                      ) : summary.utilizationRate >= 90 ? (
+                        <span
+                          className="font-semibold flex items-center gap-1"
+                          style={{ color: overallWarningColor || '#fc3504' }}
+                        >
+                          <AlertTriangle className="size-3" />
+                          {t('reports.budgetNearLimit', '瀕臨上限')}
+                        </span>
+                      ) : summary.utilizationRate >= 75 ? (
+                        <span
+                          className="font-semibold flex items-center gap-1"
+                          style={{ color: overallWarningColor || '#f59e0b' }}
+                        >
+                          <AlertCircle className="size-3" />
+                          {t('reports.budgetTight', '額度緊張')}
+                        </span>
+                      ) : (
+                        <span className="text-emerald-500 font-semibold flex items-center gap-1">
+                          <CheckCircle2 className="size-3" />
+                          {t('reports.onTrack', '進度良好')}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
@@ -255,18 +277,23 @@ export function ReportBudgetSection({
                 <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono block">
                   {t('reports.utilizationRate', '執行率')}
                 </span>
-                <span
-                  className={cn(
-                    'text-sm font-mono font-bold mt-0.5 block truncate',
-                    summary.utilizationRate > 100
-                      ? 'text-destructive'
-                      : summary.utilizationRate >= 85
-                        ? 'text-amber-500'
-                        : 'text-foreground'
-                  )}
-                >
-                  {summary.utilizationRate.toFixed(1)}%
-                </span>
+                {(() => {
+                  const isOver = summary.utilizationRate > 100 || summary.overbudgetCount > 0;
+                  const overallWarningColor = getBudgetWarningColor(summary.utilizationRate, isOver);
+
+                  return (
+                    <span
+                      className={cn(
+                        'text-sm font-mono font-bold mt-0.5 block truncate',
+                        isOver && 'text-destructive',
+                        !overallWarningColor && 'text-foreground'
+                      )}
+                      style={overallWarningColor ? { color: overallWarningColor } : undefined}
+                    >
+                      {summary.utilizationRate.toFixed(1)}%
+                    </span>
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -303,36 +330,35 @@ export function ReportBudgetSection({
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span
-                        className={cn(
-                          'text-xs font-mono font-bold px-1.5 py-0.5 rounded shrink-0',
-                          item.isOverbudget
-                            ? 'bg-destructive text-destructive-foreground'
-                            : item.percentage >= 85
-                              ? 'bg-amber-500 text-white'
-                              : 'bg-muted text-foreground border border-border'
-                        )}
-                      >
-                        {item.percentage.toFixed(1)}%
-                      </span>
+                      {(() => {
+                        const itemWarningColor = getBudgetWarningColor(item.percentage, item.isOverbudget);
+                        return (
+                          <span
+                            className={cn(
+                              'text-xs font-mono font-bold px-1.5 py-0.5 rounded shrink-0',
+                              item.isOverbudget
+                                ? 'bg-destructive text-destructive-foreground'
+                                : itemWarningColor
+                                  ? 'text-white'
+                                  : 'bg-muted text-foreground border border-border'
+                            )}
+                            style={!item.isOverbudget && itemWarningColor ? { backgroundColor: itemWarningColor } : undefined}
+                          >
+                            {item.percentage.toFixed(1)}%
+                          </span>
+                        );
+                      })()}
                       <ChevronRight className="size-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
                     </div>
                   </div>
 
                   {/* 進度槽 */}
-                  <div className="w-full h-1.5 rounded-full bg-muted/60 overflow-hidden">
-                    <div
-                      className={cn(
-                        'h-full rounded-full transition-all duration-300',
-                        item.isOverbudget
-                          ? 'bg-destructive'
-                          : item.percentage >= 85
-                            ? 'bg-amber-500'
-                            : 'bg-foreground'
-                      )}
-                      style={{ width: `${Math.min(100, Math.max(item.percentage, 2))}%` }}
-                    />
-                  </div>
+                  <BudgetProgressBar
+                    percentage={item.percentage}
+                    isOver={item.isOverbudget}
+                    heightClass="h-1.5"
+                    variant="foreground"
+                  />
 
                   {/* 數據明細列 */}
                   <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">

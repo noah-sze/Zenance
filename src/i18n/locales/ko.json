@@ -802,6 +802,8 @@
       "totalOverbudget": "예산 초과액",
       "used": "사용 금액",
       "onTrack": "양호",
+      "budgetTight": "예산 임박",
+      "budgetNearLimit": "한도 근접",
       "overbudgetWarning": "총 {{count}}개 항목 예산 초과",
       "totalBudget": "총 예산",
       "totalSpent": "총 지출",

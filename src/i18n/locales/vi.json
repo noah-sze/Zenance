@@ -802,6 +802,8 @@
       "totalOverbudget": "Số tiền vượt ngân sách",
       "used": "Used",
       "onTrack": "Tiến độ tốt",
+      "budgetTight": "Ngân sách eo hẹp",
+      "budgetNearLimit": "Gần chạm mức",
       "overbudgetWarning": "{{count}} mục đã chi vượt ngân sách",
       "totalBudget": "Tổng ngân sách",
       "totalSpent": "Đã chi",

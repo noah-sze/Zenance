@@ -644,6 +644,8 @@
       "totalOverbudget": "預算超支額",
       "used": "已用",
       "onTrack": "進度良好",
+      "budgetTight": "額度緊張",
+      "budgetNearLimit": "瀕臨上限",
       "overbudgetWarning": "共 {{count}} 個項目已超支",
       "totalBudget": "總額度",
       "totalSpent": "已支出",

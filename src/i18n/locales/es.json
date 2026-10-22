@@ -802,6 +802,8 @@
       "totalOverbudget": "Exceso sobre presupuesto",
       "used": "Used",
       "onTrack": "En curso",
+      "budgetTight": "Presupuesto ajustado",
+      "budgetNearLimit": "Cerca del límite",
       "overbudgetWarning": "{{count}} presupuestos excedidos",
       "totalBudget": "Presupuesto total",
       "totalSpent": "Total gastado",
