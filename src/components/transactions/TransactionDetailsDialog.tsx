@@ -861,11 +861,6 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
     return id;
   }, [allWallets, wallets, accounts, allContacts, contacts]);
 
-  const getContact = useCallback((id?: string) => {
-    if (!id) return undefined;
-    return (allContacts || contacts)?.find((c) => c.id === id);
-  }, [allContacts, contacts]);
-
   const getCategoryName = (categoryId: string, tx: Transaction) => {
     if (categoryId === 'transfer') return t('add.transfer');
     if (categoryId === 'advance' || (tx.type === 'loan' && tx.category === 'advance')) {
@@ -1298,19 +1293,14 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
             <span>{t('receipt.details', '明細')}</span>
           </div>
 
-          {/* 出款 / 轉出帳戶 */}
+          {/* 出款 / 入款帳戶 (依交易類型動態顯示) */}
           <div className="flex items-baseline justify-between py-0.5">
-            <span className="text-muted-foreground shrink-0">{t('add.lendFrom', '出款')}</span>
+            <span className="text-muted-foreground shrink-0">
+              {tx.type === 'income' ? t('add.borrowTo', '入款') : t('add.lendFrom', '出款')}
+            </span>
             <span className="flex-1 mx-2 border-b border-dotted border-border/80 self-center" />
-            <span className="font-medium text-foreground truncate max-w-[140px] text-right inline-flex items-center justify-end gap-1">
-              {getContact(tx.accountId) && (
-                <ContactAvatar
-                  group={getContact(tx.accountId)?.group}
-                  className="size-3 border-none bg-transparent p-0 shrink-0"
-                  iconClassName="size-3 text-muted-foreground/70"
-                />
-              )}
-              <span className="truncate">{getAccountName(tx.accountId)}</span>
+            <span className="font-medium text-foreground truncate max-w-[140px] text-right">
+              {getAccountName(tx.accountId)}
             </span>
           </div>
 
@@ -1319,15 +1309,8 @@ export function TransactionDetailsDialog({ transactionId, onClose }: Props) {
             <div className="flex items-baseline justify-between py-0.5">
               <span className="text-muted-foreground shrink-0">{t('add.borrowTo', '入款')}</span>
               <span className="flex-1 mx-2 border-b border-dotted border-border/80 self-center" />
-              <span className="font-medium text-foreground truncate max-w-[140px] text-right inline-flex items-center justify-end gap-1">
-                {getContact(tx.toAccountId) && (
-                  <ContactAvatar
-                    group={getContact(tx.toAccountId)?.group}
-                    className="size-3 border-none bg-transparent p-0 shrink-0"
-                    iconClassName="size-3 text-muted-foreground/70"
-                  />
-                )}
-                <span className="truncate">{getAccountName(tx.toAccountId)}</span>
+              <span className="font-medium text-foreground truncate max-w-[140px] text-right">
+                {getAccountName(tx.toAccountId)}
               </span>
             </div>
           )}
